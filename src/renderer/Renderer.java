@@ -3,17 +3,53 @@ package renderer;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Renderer extends GUI {
 	@Override
 	protected void onLoad(File file) {
 		// TODO fill this in.
-
 		/*
 		 * This method should parse the given file into a Scene object, which
 		 * you store and use to render an image.
 		 */
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			String line;
+			boolean firstLine = true;
+			Vector3D lightPos = null;
+			List<Scene.Polygon> polygons = new ArrayList<>();
+			while ((line = reader.readLine()) != null) {
+				float[] points = new float[9];
+				int[] color = new int[3];
+				String[] stringValues = line.split(" ");
+				Float[] floatValues = Arrays.stream(stringValues).map(Float::valueOf).toArray(Float[]::new);
+				if (firstLine) {
+					lightPos = new Vector3D(floatValues[0], floatValues[1], floatValues[2]);
+					firstLine = false;
+				} else {
+					for (int i = 0; i < 12; i++) {
+						if (i < 9) {
+							points[i] = floatValues[i];
+						} else {
+							color[i-9] = Math.round(floatValues[i]);
+						}
+					}
+					polygons.add(new Scene.Polygon(points, color));
+				}
+			}
+			Scene scene = new Scene(polygons, lightPos);
+			System.out.println(scene);
+
+
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

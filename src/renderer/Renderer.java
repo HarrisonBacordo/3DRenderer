@@ -11,6 +11,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Renderer extends GUI {
+	public static final float ROTATION_VALUE = 0.8f;
+	public static final int TRANSLATION_VALUE = 10;
+
+	private Scene scene;
+
 	@Override
 	protected void onLoad(File file) {
 		// TODO fill this in.
@@ -43,7 +48,7 @@ public class Renderer extends GUI {
 					polygons.add(new Scene.Polygon(points, color));
 				}
 			}
-			Scene scene = new Scene(polygons, lightPos);
+			this.scene = new Scene(polygons, lightPos);
 			System.out.println(scene);
 
 
@@ -59,6 +64,26 @@ public class Renderer extends GUI {
 		/*
 		 * This method should be used to rotate the user's viewpoint.
 		 */
+
+//		Rotation
+		switch (ev.getKeyChar()) {
+			case 'a':
+				scene = Pipeline.rotateScene(scene, 0, ROTATION_VALUE);
+				scene = Pipeline.translateScene(scene);
+				break;
+			case 'd':
+				scene = Pipeline.rotateScene(scene, 0, -ROTATION_VALUE);
+				scene = Pipeline.translateScene(scene);
+				break;
+			case 's':
+				scene = Pipeline.rotateScene(scene, ROTATION_VALUE, 0);
+				scene = Pipeline.translateScene(scene);
+				break;
+			case 'w':
+				scene = Pipeline.rotateScene(scene, -ROTATION_VALUE, 0);
+				scene = Pipeline.translateScene(scene);
+				break;
+		}
 	}
 
 	@Override
@@ -71,6 +96,16 @@ public class Renderer extends GUI {
 		 * static method stubs in the Pipeline class, which you also need to
 		 * fill in.
 		 */
+		Color[][] renderedImg = new Color[GUI.CANVAS_WIDTH][GUI.CANVAS_HEIGHT];
+		double[][] zDepth = new double[GUI.CANVAS_WIDTH][GUI.CANVAS_HEIGHT];
+		for (double [] row : zDepth) {
+			Arrays.fill(row, Double.POSITIVE_INFINITY);
+		}
+
+		for (Scene.Polygon poly : this.scene.getPolygons()) {
+//			calculate the x and z EdgeList (EL) of this polygon;
+
+		}
 		return null;
 	}
 

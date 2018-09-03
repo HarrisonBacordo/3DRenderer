@@ -1,120 +1,150 @@
 package renderer;
 
-import java.awt.Color;
-
+import javafx.util.Pair;
 import renderer.Scene.Polygon;
+
+import java.awt.*;
 
 /**
  * The Pipeline class has method stubs for all the major components of the
  * rendering pipeline, for you to fill in.
- * 
+ * <p>
  * Some of these methods can get quite long, in which case you should strongly
  * consider moving them out into their own file. You'll need to update the
  * imports in the test suite if you do.
  */
 public class Pipeline {
 
-	/**
-	 * Returns true if the given polygon is facing away from the camera (and so
-	 * should be hidden), and false otherwise.
-	 */
-	public static boolean isHidden(Polygon poly) {
-		// TODO fill this in.
-		return false;
-	}
+    /**
+     * Returns true if the given polygon is facing away from the camera (and so
+     * should be hidden), and false otherwise.
+     */
+    public static boolean isHidden(Polygon poly) {
+        // TODO fill this in.
+        return false;
+    }
 
-	/**
-	 * Computes the colour of a polygon on the screen, once the lights, their
-	 * angles relative to the polygon's face, and the reflectance of the polygon
-	 * have been accounted for.
-	 * 
-	 * @param lightDirection
-	 *            The Vector3D pointing to the directional light read in from
-	 *            the file.
-	 * @param lightColor
-	 *            The color of that directional light.
-	 * @param ambientLight
-	 *            The ambient light in the scene, i.e. light that doesn't depend
-	 *            on the direction.
-	 */
-	public static Color getShading(Polygon poly, Vector3D lightDirection, Color lightColor, Color ambientLight) {
-		// TODO fill this in.
-		return null;
-	}
+    /**
+     * Computes the colour of a polygon on the screen, once the lights, their
+     * angles relative to the polygon's face, and the reflectance of the polygon
+     * have been accounted for.
+     *
+     * @param lightDirection The Vector3D pointing to the directional light read in from
+     *                       the file.
+     * @param lightColor     The color of that directional light.
+     * @param ambientLight   The ambient light in the scene, i.e. light that doesn't depend
+     *                       on the direction.
+     */
+    public static Color getShading(Polygon poly, Vector3D lightDirection, Color lightColor, Color ambientLight) {
+        // TODO fill this in
+        Vector3D a = poly.getVertices()[1].minus(poly.getVertices()[0]);
+        Vector3D b = poly.getVertices()[2].minus(poly.getVertices()[1]);
+        Vector3D n = a.crossProduct(b);
+        float cosTheta = n.cosTheta(lightDirection);
+        int red, green, blue;
 
-	/**
-	 * This method should rotate the polygons and light such that the viewer is
-	 * looking down the Z-axis. The idea is that it returns an entirely new
-	 * Scene object, filled with new Polygons, that have been rotated.
-	 * 
-	 * @param scene
-	 *            The original Scene.
-	 * @param xRot
-	 *            An angle describing the viewer's rotation in the YZ-plane (i.e
-	 *            around the X-axis).
-	 * @param yRot
-	 *            An angle describing the viewer's rotation in the XZ-plane (i.e
-	 *            around the Y-axis).
-	 * @return A new Scene where all the polygons and the light source have been
-	 *         rotated accordingly.
-	 */
-	public static Scene rotateScene(Scene scene, float xRot, float yRot) {
-		// TODO fill this in.
-		return null;
-	}
+        red = (int) (ambientLight.getRed() * poly.getReflectance().getRed() + lightColor.getRed()
+                * poly.getReflectance().getRed() * cosTheta);
+        green = (int) (ambientLight.getGreen() * poly.getReflectance().getGreen() + lightColor.getGreen()
+                * poly.getReflectance().getGreen() * cosTheta);
+        blue = (int) (ambientLight.getBlue() * poly.getReflectance().getBlue() + lightColor.getBlue()
+                * poly.getReflectance().getBlue() * cosTheta);
 
-	/**
-	 * This should translate the scene by the appropriate amount.
-	 * 
-	 * @param scene
-	 * @return
-	 */
-	public static Scene translateScene(Scene scene) {
-		// TODO fill this in.
-		return null;
-	}
+        return new Color(red, green, blue);
+    }
 
-	/**
-	 * This should scale the scene.
-	 * 
-	 * @param scene
-	 * @return
-	 */
-	public static Scene scaleScene(Scene scene) {
-		// TODO fill this in.
-		return null;
-	}
+    /**
+     * This method should rotate the polygons and light such that the viewer is
+     * looking down the Z-axis. The idea is that it returns an entirely new
+     * Scene object, filled with new Polygons, that have been rotated.
+     *
+     * @param scene The original Scene.
+     * @param xRot  An angle describing the viewer's rotation in the YZ-plane (i.e
+     *              around the X-axis).
+     * @param yRot  An angle describing the viewer's rotation in the XZ-plane (i.e
+     *              around the Y-axis).
+     * @return A new Scene where all the polygons and the light source have been
+     * rotated accordingly.
+     */
+    public static Scene rotateScene(Scene scene, float xRot, float yRot) {
+        // TODO fill this in.
+        return null;
+    }
 
-	/**
-	 * Computes the edgelist of a single provided polygon, as per the lecture
-	 * slides.
-	 */
-	public static EdgeList computeEdgeList(Polygon poly) {
-		// TODO fill this in.
-		return null;
-	}
+    /**
+     * This should translate the scene by the appropriate amount.
+     *
+     * @param scene
+     * @return
+     */
+    public static Scene translateScene(Scene scene) {
+        // TODO fill this in.
+        return null;
+    }
 
-	/**
-	 * Fills a zbuffer with the contents of a single edge list according to the
-	 * lecture slides.
-	 * 
-	 * The idea here is to make zbuffer and zdepth arrays in your main loop, and
-	 * pass them into the method to be modified.
-	 * 
-	 * @param zbuffer
-	 *            A double array of colours representing the Color at each pixel
-	 *            so far.
-	 * @param zdepth
-	 *            A double array of floats storing the z-value of each pixel
-	 *            that has been coloured in so far.
-	 * @param polyEdgeList
-	 *            The edgelist of the polygon to add into the zbuffer.
-	 * @param polyColor
-	 *            The colour of the polygon to add into the zbuffer.
-	 */
-	public static void computeZBuffer(Color[][] zbuffer, float[][] zdepth, EdgeList polyEdgeList, Color polyColor) {
-		// TODO fill this in.
-	}
+    /**
+     * This should scale the scene.
+     *
+     * @param scene
+     * @return
+     */
+    public static Scene scaleScene(Scene scene) {
+        // TODO fill this in.
+        return null;
+    }
+
+    /**
+     * Computes the edgelist of a single provided polygon, as per the lecture
+     * slides.
+     */
+    public static EdgeList computeEdgeList(Polygon poly) {
+        // TODO fill this in.
+        Vector3D v1 = poly.getVertices()[0];
+        Vector3D v2 = poly.getVertices()[1];
+        Vector3D v3 = poly.getVertices()[2];
+
+        Vector3D[][] vectorPairs = new Vector3D[3][2];
+        vectorPairs[0] = new Vector3D[]{v1, v2};
+        vectorPairs[1] = new Vector3D[]{v2, v3};
+        vectorPairs[2] = new Vector3D[]{v3, v1};
+        for (Vector3D[] pair : vectorPairs) {
+            float slope = (pair[1].x - pair[0].x) / (pair[1].y - pair[0].y);
+            float x = pair[0].x;
+            float y = Math.round(pair[0].y);
+            if (pair[0].y < pair[1].y) {
+                while (y <= Math.round(pair[1].y)) {
+//                    TODO X MIN Y?
+                    x += slope;
+                    y++;
+                }
+            } else {
+                while (y >= Math.round(pair[1].y)) {
+//                    TODO X MAX Y?
+                    x -= slope;
+                    y--;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Fills a zbuffer with the contents of a single edge list according to the
+     * lecture slides.
+     * <p>
+     * The idea here is to make zbuffer and zdepth arrays in your main loop, and
+     * pass them into the method to be modified.
+     *
+     * @param zbuffer      A double array of colours representing the Color at each pixel
+     *                     so far.
+     * @param zdepth       A double array of floats storing the z-value of each pixel
+     *                     that has been coloured in so far.
+     * @param polyEdgeList The edgelist of the polygon to add into the zbuffer.
+     * @param polyColor    The colour of the polygon to add into the zbuffer.
+     */
+    public static void computeZBuffer(Color[][] zbuffer, float[][] zdepth, EdgeList polyEdgeList, Color polyColor) {
+        // TODO fill this in.
+    }
 }
 
 // code for comp261 assignments

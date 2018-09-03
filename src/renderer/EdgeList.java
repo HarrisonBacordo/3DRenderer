@@ -9,38 +9,48 @@ package renderer;
  * an addRow(y, xLeft, xRight, zLeft, zRight) method.
  */
 public class EdgeList {
+	private int startY, endY;
+	private float[] leftX, rightX, leftZ, rightZ;
+
 	public EdgeList(int startY, int endY) {
-		// TODO fill this in.
+		if(startY < endY) {
+			this.startY = startY;
+			this.endY = endY;
+		}else{
+			this.startY = endY;
+			this.endY = startY;
+		}
+
+		int heightDifference = (endY - startY) + 1; //Accomodates the equal too end y value
+
+		leftX 	= new float[heightDifference];
+		rightX 	= new float[heightDifference];
+		leftZ 	= new float[heightDifference];
+		rightZ 	= new float[heightDifference];
 	}
 
 	public int getStartY() {
-		// TODO fill this in.
-		return 0;
+		return startY;
 	}
 
 	public int getEndY() {
-		// TODO fill this in.
-		return 0;
+		return endY;
 	}
 
 	public float getLeftX(int y) {
-		// TODO fill this in.
-		return 0;
+		return leftX[y - startY];
 	}
 
 	public float getRightX(int y) {
-		// TODO fill this in.
-		return 0;
+		return rightX[y - startY];
 	}
 
 	public float getLeftZ(int y) {
-		// TODO fill this in.
-		return 0;
+		return leftZ[y - startY];
 	}
 
 	public float getRightZ(int y) {
-		// TODO fill this in.
-		return 0;
+		return rightZ[y - startY];
 	}
 }
 

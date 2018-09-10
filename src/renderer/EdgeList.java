@@ -9,6 +9,8 @@ package renderer;
  * an addRow(y, xLeft, xRight, zLeft, zRight) method.
  */
 public class EdgeList {
+	public static final int LEFT = 0;
+	public static final int RIGHT = 1;
 	private int startY, endY;
 	private float[] leftX, rightX, leftZ, rightZ;
 
@@ -27,6 +29,24 @@ public class EdgeList {
 		rightX 	= new float[heightDifference];
 		leftZ 	= new float[heightDifference];
 		rightZ 	= new float[heightDifference];
+	}
+
+	//Handles adding a row given a height/index, an x location, z location and the direction in which its going
+	public void addRow(int y, float x, float z, int direction){
+		if(y < 0 || y > endY) return;
+
+		y -= startY; // Accounts for array indexing
+
+		if(direction == LEFT) {
+			this.leftX[y] = x;
+			this.leftZ[y] = z;
+			return;
+		}
+
+		if (direction == RIGHT){
+			this.rightX[y] 	= x;
+			this.rightZ[y] 	= z;
+		}
 	}
 
 	public int getStartY() {

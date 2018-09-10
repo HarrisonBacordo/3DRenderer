@@ -97,16 +97,20 @@ public class Renderer extends GUI {
 		 * fill in.
 		 */
 		Color[][] renderedImg = new Color[GUI.CANVAS_WIDTH][GUI.CANVAS_HEIGHT];
-		double[][] zDepth = new double[GUI.CANVAS_WIDTH][GUI.CANVAS_HEIGHT];
-		for (double [] row : zDepth) {
-			Arrays.fill(row, Double.POSITIVE_INFINITY);
+		float[][] zDepth = new float[GUI.CANVAS_WIDTH][GUI.CANVAS_HEIGHT];
+		for (float [] row : zDepth) {
+			Arrays.fill(row, Float.POSITIVE_INFINITY);
 		}
 
 		for (Scene.Polygon poly : this.scene.getPolygons()) {
 //			calculate the x and z EdgeList (EL) of this polygon;
+			EdgeList edgeList = Pipeline.computeEdgeList(poly);
+			Color ambientLight = new Color(this.getAmbientLight()[0], this.getAmbientLight()[1], this.getAmbientLight()[2]);
+			Color shading = Pipeline.getShading(poly, this.scene.lightPos, poly.getReflectance(), ambientLight);
 
+			Pipeline.computeZBuffer(renderedImg, zDepth, edgeList, shading);
 		}
-		return null;
+		return this.convertBitmapToImage(renderedImg);
 	}
 
 	/**

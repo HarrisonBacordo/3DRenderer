@@ -12,13 +12,11 @@ import java.util.List;
 
 public class Renderer extends GUI {
 	public static final float ROTATION_VALUE = 0.8f;
-	public static final int TRANSLATION_VALUE = 10;
-
+	private boolean init = true;
 	private Scene scene;
 
 	@Override
 	protected void onLoad(File file) {
-		// TODO fill this in.
 		/*
 		 * This method should parse the given file into a Scene object, which
 		 * you store and use to render an image.
@@ -49,7 +47,6 @@ public class Renderer extends GUI {
 				}
 			}
 			this.scene = new Scene(polygons, lightPos);
-			System.out.println(scene);
 
 
 		} catch(Exception e) {
@@ -59,55 +56,58 @@ public class Renderer extends GUI {
 
 	@Override
 	protected void onKeyPress(KeyEvent ev) {
-		// TODO fill this in.
-
-		/*
-		 * This method should be used to rotate the user's viewpoint.
-		 */
-
-//		Rotation
-		switch (ev.getKeyChar()) {
-			case 'a':
-				scene = Pipeline.rotateScene(scene, 0, ROTATION_VALUE);
-				scene = Pipeline.translateScene(scene);
+		switch (ev.getKeyCode()) {
+			case KeyEvent.VK_W:
+				this.scene = Pipeline.rotateScene(this.scene, -ROTATION_VALUE, 0);
+				this.scene = Pipeline.translateScene(this.scene);
 				break;
-			case 'd':
-				scene = Pipeline.rotateScene(scene, 0, -ROTATION_VALUE);
-				scene = Pipeline.translateScene(scene);
+			case KeyEvent.VK_A:
+				this.scene = Pipeline.rotateScene(this.scene, 0, ROTATION_VALUE);
+				this.scene = Pipeline.translateScene(this.scene);
 				break;
-			case 's':
+			case KeyEvent.VK_S:
 				scene = Pipeline.rotateScene(scene, ROTATION_VALUE, 0);
 				scene = Pipeline.translateScene(scene);
 				break;
-			case 'w':
-				scene = Pipeline.rotateScene(scene, -ROTATION_VALUE, 0);
-				scene = Pipeline.translateScene(scene);
+			case KeyEvent.VK_D:
+				this.scene = Pipeline.rotateScene(this.scene, 0, -ROTATION_VALUE);
+				this.scene = Pipeline.translateScene(this.scene);
 				break;
+			default:
+				break;
+
 		}
 	}
 
 	@Override
 	protected BufferedImage render() {
-		// TODO fill this in.
+		if (this.scene == null) { return null; }
 
-		/*
-		 * This method should put together the pieces of your renderer, as
-		 * described in the lecture. This will involve calling each of the
-		 * static method stubs in the Pipeline class, which you also need to
-		 * fill in.
-		 */
+//		variable init
 		Color[][] renderedImg = new Color[GUI.CANVAS_WIDTH][GUI.CANVAS_HEIGHT];
 		float[][] zDepth = new float[GUI.CANVAS_WIDTH][GUI.CANVAS_HEIGHT];
-		for (float [] row : zDepth) {
-			Arrays.fill(row, Float.POSITIVE_INFINITY);
+		for (int i = 0; i < GUI.CANVAS_WIDTH; i++) {
+			Arrays.fill(zDepth[i], Float.POSITIVE_INFINITY);
+			Arrays.fill(renderedImg[i], Color.GRAY);
 		}
 
-		for (Scene.Polygon poly : this.scene.getPolygons()) {
-//			calculate the x and z EdgeList (EL) of this polygon;
-			EdgeList edgeList = Pipeline.computeEdgeList(poly);
-			Color ambientLight = new Color(this.getAmbientLight()[0], this.getAmbientLight()[1], this.getAmbientLight()[2]);
-			Color shading = Pipeline.getShading(poly, this.scene.lightPos, poly.getReflectance(), ambientLight);
+//		scale scene if first render
+		if (this.init) {
+			this.scene = Pipeline.scaleScene(this.scene);
+			this.init = false;
+		}
 
+//		center scene
+		this.scene = Pipeline.translateScene(this.scene);
+
+//		render visible polygons
+		EdgeList edgeList;
+		Color shading;
+		Color ambientLight = new Color(this.getAmbientLight()[0], this.getAmbientLight()[1], this.getAmbientLight()[2]);
+		for (Scene.Polygon poly : this.scene.getPolygons()) {
+			if (Pipeline.isHidden(poly)) { continue; }
+			edgeList = Pipeline.computeEdgeList(poly);
+			shading = Pipeline.getShading(poly, this.scene.lightPos, poly.getReflectance(), ambientLight);
 			Pipeline.computeZBuffer(renderedImg, zDepth, edgeList, shading);
 		}
 		return this.convertBitmapToImage(renderedImg);

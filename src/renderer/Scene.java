@@ -31,6 +31,32 @@ public class Scene {
     }
 
     /**
+     * Computes the scene bouding box
+     */
+    public float[] getBoundingBox() {
+        float xMin = Float.MAX_VALUE;
+        float xMax = Float.MIN_VALUE;
+        float yMin = Float.MAX_VALUE;
+        float yMax = Float.MIN_VALUE;
+        float zMin = Float.MAX_VALUE;
+        float zMax = Float.MIN_VALUE;
+
+//        Get min and max
+        for (Polygon p : this.polygons) {
+            for (Vector3D v : p.getVertices()) {
+                xMin = Math.min(v.x, xMin);
+                xMax = Math.max(v.x, xMax);
+                yMin = Math.min(v.y, yMin);
+                yMax = Math.max(v.y, yMax);
+                zMin = Math.min(v.z, zMin);
+                zMax = Math.max(v.z, zMax);
+            }
+        }
+
+        return new float[]{xMin, xMax, yMin, yMax, zMin, zMax};
+    }
+
+    /**
      * Polygon stores data about a single polygon in a scene, keeping track of
      * (at least!) its three vertices and its reflectance.
      * <p>

@@ -1,0 +1,9 @@
+What my code does:
+    Stage 1-3
+What my code doesn't do:
+    Stage 4
+Bugs:
+    Weird rendering anomalies. It isn't perfect, has random mutations at certain rotation
+How I tested the program:
+    Tests passing, along testing different image renders at different rotations and light colours.
+No extensions implemented.

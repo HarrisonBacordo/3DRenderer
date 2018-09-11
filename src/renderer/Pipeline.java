@@ -3,6 +3,8 @@ package renderer;
 import renderer.Scene.Polygon;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Pipeline class has method stubs for all the major components of the
@@ -84,34 +86,77 @@ public class Pipeline {
      * rotated accordingly.
      */
     public static Scene rotateScene(Scene scene, float xRot, float yRot) {
-        // TODO fill this in.
-        return null;
+        Transform xPolyRotation = Transform.newXRotation(xRot);
+        Transform yPolyRotation = Transform.newYRotation(yRot);
+        Transform polyRotation = xPolyRotation.compose(yPolyRotation);
+        List<Polygon> polygonBuffer = new ArrayList<>();
+        applyTransformation(scene, polyRotation, polygonBuffer);
+        Vector3D lightRotation = polyRotation.multiply(scene.getLight());
+        return new Scene(polygonBuffer, lightRotation);
     }
 
     /**
      * This should translate the scene by the appropriate amount.
      *
-     * @param scene
-     * @return
+     * @param scene - scene to apply translated scene
+     * @return - translated scene
      */
     public static Scene translateScene(Scene scene) {
-        // TODO fill this in.
-        return null;
+        float[] bounds = scene.getBoundingBox();
+        //Center in 3d space
+        float xCenter = (GUI.CANVAS_WIDTH - (bounds[1] - bounds[0])) / 2;
+        float yCenter = (GUI.CANVAS_HEIGHT - (bounds[3] - bounds[2])) / 2;
+        float zCenter = (GUI.CANVAS_WIDTH - (bounds[5] - bounds[4])) / 2;
+        //Translation Matrix based on minimum distances
+        Transform polyTranslation = Transform.newTranslation((xCenter - bounds[0]), (yCenter - bounds[2]), zCenter - bounds[4]);
+        List<Polygon> polyBuffer = new ArrayList<>();
+        applyTransformation(scene, polyTranslation, polyBuffer);
+
+        return new Scene(polyBuffer, scene.getLight());
     }
 
     /**
      * This should scale the scene.
      *
-     * @param scene
-     * @return
+     * @param scene - scene to apply scale to
+     * @return - the scaled scene
      */
     public static Scene scaleScene(Scene scene) {
-        // TODO fill this in.
-        return null;
+        float[] bounds = scene.getBoundingBox();
+        float width  = bounds[0] - bounds[1];
+        float height = bounds[2] - bounds[3];
+
+        float horizontalScale = GUI.CANVAS_WIDTH / width / 2;
+        float verticalScale = GUI.CANVAS_HEIGHT / height / 2;
+
+        float scale = Math.abs(Math.min(horizontalScale, verticalScale));
+        Transform polyScale = Transform.newScale(scale, scale, scale);
+
+        List<Polygon> polyBuffer = new ArrayList<>();
+        applyTransformation(scene, polyScale, polyBuffer);
+
+        return new Scene(polyBuffer, scene.getLight());
     }
 
     /**
-     * Computes the edgelist of a single provided polygon, as per the lecture
+     * Applies the transformation on the given scene and adds them to the buffer
+     * @param scene - scene to apply transformation to
+     * @param transformation - transformation to apply
+     * @param polyBuffer - buffer for the translated polygons
+     */
+    private static void applyTransformation(Scene scene, Transform transformation, List<Polygon> polyBuffer) {
+        Vector3D[] vectorBuffer;
+        for (Polygon poly : scene.getPolygons()) {
+            vectorBuffer = new Vector3D[3];
+            for (int i = 0; i < poly.getVertices().length; i++) {
+                vectorBuffer[i] = transformation.multiply(poly.getVertices()[i]);
+            }
+            polyBuffer.add(new Polygon(vectorBuffer[0], vectorBuffer[1], vectorBuffer[2], poly.getReflectance()));
+        }
+    }
+
+    /**
+     * Computes the edge list of a single provided polygon, as per the lecture
      * slides.
      */
     public static EdgeList computeEdgeList(Polygon poly) {
@@ -168,20 +213,19 @@ public class Pipeline {
      * @param polyColor    The colour of the polygon to add into the zbuffer.
      */
     public static void computeZBuffer(Color[][] zBuffer, float[][] zDepth, EdgeList polyEdgeList, Color polyColor) {
-        // TODO fill this in.
         for (int y = polyEdgeList.getStartY(); y <= polyEdgeList.getEndY(); y++) {
             float slope = (polyEdgeList.getRightZ(y) - polyEdgeList.getLeftZ(y)) / (polyEdgeList.getRightX(y) / polyEdgeList.getLeftX(y));
             int x = Math.round(polyEdgeList.getLeftX(y));
             float z = polyEdgeList.getLeftZ(y) + slope * (x - polyEdgeList.getLeftX(y));
 
-            while (x <= Math.round(polyEdgeList.getRightX(y))) {
+            while (x < Math.round(polyEdgeList.getRightX(y))) {
                 if (x < 0 || x >= zBuffer.length) {
                     z += slope;
                     x++;
                     continue;
                 }
 
-                if (z < zDepth[x][y]) {
+                if (x < zDepth.length && y < zDepth[0].length && z < zDepth[x][y]) {
                     zBuffer[x][y] = polyColor;
                     zDepth[x][y] = z;
                 }

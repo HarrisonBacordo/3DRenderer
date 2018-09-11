@@ -23,7 +23,10 @@ public class EdgeList {
             this.endY = startY;
         }
         int heightDifference = (endY - startY) + 1;
-        leftX = rightX = leftZ = rightZ = new float[heightDifference];
+        leftX = new float[heightDifference];
+        rightX = new float[heightDifference];
+        leftZ = new float[heightDifference];
+        rightZ = new float[heightDifference];
     }
 
     //Handles adding a row given a height/index, an x location, z location and the direction in which its going

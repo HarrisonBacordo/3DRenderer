@@ -1,13 +1,12 @@
 package tests;
 
-import static org.junit.Assert.assertEquals;
-
-import java.awt.Color;
-
 import org.junit.Test;
-
 import renderer.EdgeList;
 import renderer.Pipeline;
+
+import java.awt.*;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author tony

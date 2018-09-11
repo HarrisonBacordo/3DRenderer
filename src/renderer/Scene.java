@@ -31,7 +31,7 @@ public class Scene {
     }
 
     /**
-     * Computes the scene bouding box
+     * Gets the bounding box of the scene
      */
     public float[] getBoundingBox() {
         float xMin = Float.MAX_VALUE;

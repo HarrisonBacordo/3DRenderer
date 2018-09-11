@@ -54,8 +54,8 @@ public class Pipeline {
 
         if (cosTheta > 0) {
             red = (int) ((ambientLight.getRed() + lightColor.getRed() * cosTheta) * poly.getReflectance().getRed() / 255);
-            green = (int)((ambientLight.getGreen() + lightColor.getGreen() * cosTheta) * poly.getReflectance().getGreen() / 255);
-            blue = (int)((ambientLight.getBlue() + lightColor.getBlue() * cosTheta) * poly.getReflectance().getBlue() / 255);
+            green = (int) ((ambientLight.getGreen() + lightColor.getGreen() * cosTheta) * poly.getReflectance().getGreen() / 255);
+            blue = (int) ((ambientLight.getBlue() + lightColor.getBlue() * cosTheta) * poly.getReflectance().getBlue() / 255);
         } else {
             red = (ambientLight.getRed() * poly.getReflectance().getRed() / 255);
             green = (ambientLight.getGreen()) * poly.getReflectance().getGreen() / 255;
@@ -88,6 +88,7 @@ public class Pipeline {
     public static Scene rotateScene(Scene scene, float xRot, float yRot) {
         Transform xPolyRotation = Transform.newXRotation(xRot);
         Transform yPolyRotation = Transform.newYRotation(yRot);
+
         Transform polyRotation = xPolyRotation.compose(yPolyRotation);
         List<Polygon> polygonBuffer = new ArrayList<>();
         applyTransformation(scene, polyRotation, polygonBuffer);
@@ -103,15 +104,13 @@ public class Pipeline {
      */
     public static Scene translateScene(Scene scene) {
         float[] bounds = scene.getBoundingBox();
-        //Center in 3d space
         float xCenter = (GUI.CANVAS_WIDTH - (bounds[1] - bounds[0])) / 2;
         float yCenter = (GUI.CANVAS_HEIGHT - (bounds[3] - bounds[2])) / 2;
         float zCenter = (GUI.CANVAS_WIDTH - (bounds[5] - bounds[4])) / 2;
-        //Translation Matrix based on minimum distances
-        Transform polyTranslation = Transform.newTranslation((xCenter - bounds[0]), (yCenter - bounds[2]), zCenter - bounds[4]);
+
+        Transform polyTranslation = Transform.newTranslation((xCenter - bounds[0]), (yCenter - bounds[2]), (zCenter - bounds[4]));
         List<Polygon> polyBuffer = new ArrayList<>();
         applyTransformation(scene, polyTranslation, polyBuffer);
-
         return new Scene(polyBuffer, scene.getLight());
     }
 
@@ -123,26 +122,24 @@ public class Pipeline {
      */
     public static Scene scaleScene(Scene scene) {
         float[] bounds = scene.getBoundingBox();
-        float width  = bounds[0] - bounds[1];
+        float width = bounds[0] - bounds[1];
         float height = bounds[2] - bounds[3];
-
         float horizontalScale = GUI.CANVAS_WIDTH / width / 2;
         float verticalScale = GUI.CANVAS_HEIGHT / height / 2;
-
         float scale = Math.abs(Math.min(horizontalScale, verticalScale));
-        Transform polyScale = Transform.newScale(scale, scale, scale);
 
+        Transform polyScale = Transform.newScale(scale, scale, scale);
         List<Polygon> polyBuffer = new ArrayList<>();
         applyTransformation(scene, polyScale, polyBuffer);
-
         return new Scene(polyBuffer, scene.getLight());
     }
 
     /**
      * Applies the transformation on the given scene and adds them to the buffer
-     * @param scene - scene to apply transformation to
+     *
+     * @param scene          - scene to apply transformation to
      * @param transformation - transformation to apply
-     * @param polyBuffer - buffer for the translated polygons
+     * @param polyBuffer     - buffer for the translated polygons
      */
     private static void applyTransformation(Scene scene, Transform transformation, List<Polygon> polyBuffer) {
         Vector3D[] vectorBuffer;

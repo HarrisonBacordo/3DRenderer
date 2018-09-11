@@ -1,16 +1,15 @@
 package tests;
 
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
-
 import renderer.Pipeline;
 import renderer.Scene;
 import renderer.Scene.Polygon;
 import renderer.Vector3D;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author tony

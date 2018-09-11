@@ -112,9 +112,7 @@ public class Vector3D {
 			return false;
 		if (Math.abs(y - other.y) > 0.00001)
 			return false;
-		if (Math.abs(z - other.z) > 0.00001)
-			return false;
-		return true;
+		return !(Math.abs(z - other.z) > 0.00001);
 	}
 }
 
